@@ -14,16 +14,27 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package v1alpha1
+package injection
 
 import (
 	"context"
 )
 
-func (b *Broker) SetDefaults(ctx context.Context) {
-	b.Spec.SetDefaults(ctx)
+// InformerFactoryInjector holds the type of a callback that attaches a particular
+// factory type to a context.
+type InformerFactoryInjector func(context.Context) context.Context
+
+func (i *impl) RegisterInformerFactory(ifi InformerFactoryInjector) {
+	i.m.Lock()
+	defer i.m.Unlock()
+
+	i.factories = append(i.factories, ifi)
 }
 
-func (bs *BrokerSpec) SetDefaults(ctx context.Context) {
-	// None
+func (i *impl) GetInformerFactories() []InformerFactoryInjector {
+	i.m.RLock()
+	defer i.m.RUnlock()
+
+	// Copy the slice before returning.
+	return append(i.factories[:0:0], i.factories...)
 }

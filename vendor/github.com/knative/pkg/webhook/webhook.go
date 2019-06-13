@@ -99,6 +99,9 @@ type ControllerOptions struct {
 	// TLS Client Authentication.
 	// The default value is tls.NoClientCert.
 	ClientAuth tls.ClientAuthType
+
+	// GroupName is the name of the group that is using this webhook.
+	GroupName string
 }
 
 // ResourceCallback defines a signature for resource specific (Route, Configuration, etc.)
@@ -333,7 +336,7 @@ func (ac *AdmissionController) register(
 			Rule: admissionregistrationv1beta1.Rule{
 				APIGroups:   []string{gvk.Group},
 				APIVersions: []string{gvk.Version},
-				Resources:   []string{plural},
+				Resources:   []string{plural + "/*"},
 			},
 		})
 	}
@@ -550,7 +553,16 @@ func (ac *AdmissionController) mutate(ctx context.Context, req *admissionv1beta1
 		oldObj = oldObj.DeepCopyObject().(GenericCRD)
 		oldObj.SetDefaults(ctx)
 
-		ctx = apis.WithinUpdate(ctx, oldObj)
+		s, ok := oldObj.(apis.HasSpec)
+		if ok {
+			apis.SetUserInfoAnnotations(s, ctx, ac.Options.GroupName)
+		}
+
+		if req.SubResource == "" {
+			ctx = apis.WithinUpdate(ctx, oldObj)
+		} else {
+			ctx = apis.WithinSubResourceUpdate(ctx, oldObj, req.SubResource)
+		}
 	} else {
 		ctx = apis.WithinCreate(ctx)
 	}
@@ -561,6 +573,11 @@ func (ac *AdmissionController) mutate(ctx context.Context, req *admissionv1beta1
 		logger.Errorw("Failed the resource specific defaulter", zap.Error(err))
 		// Return the error message as-is to give the defaulter callback
 		// discretion over (our portion of) the message that the user sees.
+		return nil, err
+	}
+
+	if patches, err = ac.setUserInfoAnnotations(ctx, patches, newObj); err != nil {
+		logger.Errorw("Failed the resource user info annotator", zap.Error(err))
 		return nil, err
 	}
 
@@ -576,6 +593,26 @@ func (ac *AdmissionController) mutate(ctx context.Context, req *admissionv1beta1
 	}
 
 	return json.Marshal(patches)
+}
+
+func (ac *AdmissionController) setUserInfoAnnotations(ctx context.Context, patches duck.JSONPatch, new GenericCRD) (duck.JSONPatch, error) {
+	if new == nil {
+		return patches, nil
+	}
+	nh, ok := new.(apis.HasSpec)
+	if !ok {
+		return patches, nil
+	}
+
+	b, a := new.DeepCopyObject().(apis.HasSpec), nh
+
+	apis.SetUserInfoAnnotations(nh, ctx, ac.Options.GroupName)
+
+	patch, err := duck.CreatePatch(b, a)
+	if err != nil {
+		return nil, err
+	}
+	return append(patches, patch...), nil
 }
 
 // roundTripPatch generates the JSONPatch that corresponds to round tripping the given bytes through

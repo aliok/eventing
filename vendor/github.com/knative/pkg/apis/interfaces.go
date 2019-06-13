@@ -66,3 +66,8 @@ type Listable interface {
 // The webhook functionality for this has been turned down, which is why this
 // interface is empty.
 type Annotatable interface{}
+
+type HasSpec interface {
+	// GetSpec returns the spec of the resource.
+	GetSpec() interface{}
+}

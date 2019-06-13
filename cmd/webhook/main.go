@@ -19,6 +19,7 @@ import (
 	"flag"
 	"log"
 
+	"github.com/knative/eventing/pkg/apis/eventing"
 	"github.com/knative/eventing/pkg/channeldefaulter"
 
 	"go.uber.org/zap"
@@ -45,7 +46,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error loading logging configuration: %v", err)
 	}
-	config, err := logging.NewConfigFromMap(cm, logconfig.WebhookName())
+	config, err := logging.NewConfigFromMap(cm)
 	if err != nil {
 		log.Fatalf("Error parsing logging configuration: %v", err)
 	}
@@ -71,7 +72,7 @@ func main() {
 	// Watch the logging config map and dynamically update logging levels.
 	configMapWatcher := configmap.NewInformedWatcher(kubeClient, system.Namespace())
 
-	configMapWatcher.Watch(logconfig.ConfigMapName(), logging.UpdateLevelFromConfigMap(logger, atomicLevel, logconfig.WebhookName(), logconfig.WebhookName()))
+	configMapWatcher.Watch(logconfig.ConfigMapName(), logging.UpdateLevelFromConfigMap(logger, atomicLevel, logconfig.WebhookName()))
 
 	// Watch the default-channel-webhook ConfigMap and dynamically update the default
 	// ClusterChannelProvisioner.
@@ -90,6 +91,7 @@ func main() {
 		Port:           8443,
 		SecretName:     "webhook-certs",
 		WebhookName:    "webhook.eventing.knative.dev",
+		GroupName:      eventing.GroupName,
 	}
 	controller := webhook.AdmissionController{
 		Client:  kubeClient,

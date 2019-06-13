@@ -73,8 +73,9 @@ required = [
 # This controls when we upgrade apis independently of Serving.
 [[override]]
   name = "github.com/knative/pkg"
+  source = "https://github.com/aliok/pkg.git"
   # HEAD as of 2019-05-16
-  revision = "7b196cff4669dbd6d31b83bdeb72fbaafd7f8993"
+  revision = "968de693ae417c6879cf66ecdedcb1235dd248ae"
 
 # TODO why is this overridden?
 [[override]]
