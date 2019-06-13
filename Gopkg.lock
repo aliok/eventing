@@ -494,7 +494,8 @@
     "webhook",
   ]
   pruneopts = "T"
-  revision = "d8a2a739d6b359a325ee6bb1dcbee13ecfee8dcc"
+  revision = "968de693ae417c6879cf66ecdedcb1235dd248ae"
+  source = "https://github.com/aliok/pkg.git"
 
 [[projects]]
   branch = "master"

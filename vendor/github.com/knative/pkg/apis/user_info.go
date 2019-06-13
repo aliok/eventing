@@ -14,25 +14,27 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package v1alpha1
+package apis
 
 import (
 	"context"
-
-	"github.com/knative/eventing/pkg/apis/eventing"
-	"github.com/knative/pkg/apis"
 	"k8s.io/apimachinery/pkg/api/equality"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-type HasSpec interface {
-	// GetSpec returns the spec of the resource.
-	GetSpec() interface{}
-}
+const (
+	// CreatorAnnotationSuffix is the suffix of the annotation key to describe
+	// the user that created the resource.
+	CreatorAnnotationSuffix = "/creator"
 
-// setUserInfoAnnotations sets creator and updater annotations on a resource.
-func setUserInfoAnnotations(resource HasSpec, ctx context.Context) {
-	if ui := apis.GetUserInfo(ctx); ui != nil {
+	// UpdaterAnnotationSuffix is the suffix of the annotation key to describe
+	// the user that last updated the resource.
+	UpdaterAnnotationSuffix = "/lastModifier"
+)
+
+// SetUserInfoAnnotations sets creator and updater annotations on a resource.
+func SetUserInfoAnnotations(resource HasSpec, ctx context.Context, groupName string) {
+	if ui := GetUserInfo(ctx); ui != nil {
 		objectMetaAccessor, ok := resource.(metav1.ObjectMetaAccessor)
 		if !ok {
 			return
@@ -44,15 +46,15 @@ func setUserInfoAnnotations(resource HasSpec, ctx context.Context) {
 			defer objectMetaAccessor.GetObjectMeta().SetAnnotations(annotations)
 		}
 
-		if apis.IsInUpdate(ctx) {
-			old := apis.GetBaseline(ctx).(HasSpec)
+		if IsInUpdate(ctx) {
+			old := GetBaseline(ctx).(HasSpec)
 			if equality.Semantic.DeepEqual(old.GetSpec(), resource.GetSpec()) {
 				return
 			}
-			annotations[eventing.UpdaterAnnotation] = ui.Username
+			annotations[groupName+UpdaterAnnotationSuffix] = ui.Username
 		} else {
-			annotations[eventing.CreatorAnnotation] = ui.Username
-			annotations[eventing.UpdaterAnnotation] = ui.Username
+			annotations[groupName+CreatorAnnotationSuffix] = ui.Username
+			annotations[groupName+UpdaterAnnotationSuffix] = ui.Username
 		}
 	}
 }

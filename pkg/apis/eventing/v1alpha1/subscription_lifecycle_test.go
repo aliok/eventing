@@ -277,8 +277,8 @@ func TestSubscriptionAnnotateUserInfo(t *testing.T) {
 			defer s.SetAnnotations(a)
 		}
 
-		a[eventing.CreatorAnnotation] = creator
-		a[eventing.UpdaterAnnotation] = updater
+		a[eventing.GroupName+apis.CreatorAnnotationSuffix] = creator
+		a[eventing.GroupName+apis.UpdaterAnnotationSuffix] = updater
 
 		return s
 	}
@@ -295,8 +295,8 @@ func TestSubscriptionAnnotateUserInfo(t *testing.T) {
 		&Subscription{},
 		nil,
 		map[string]string{
-			eventing.CreatorAnnotation: u1,
-			eventing.UpdaterAnnotation: u1,
+			eventing.GroupName + apis.CreatorAnnotationSuffix: u1,
+			eventing.GroupName + apis.UpdaterAnnotationSuffix: u1,
 		},
 	}, {
 		"update subscription which has no annotations without diff",
@@ -310,8 +310,8 @@ func TestSubscriptionAnnotateUserInfo(t *testing.T) {
 		withUserAnns(u1, u1, &Subscription{}),
 		withUserAnns(u1, u1, &Subscription{}),
 		map[string]string{
-			eventing.CreatorAnnotation: u1,
-			eventing.UpdaterAnnotation: u1,
+			eventing.GroupName + apis.CreatorAnnotationSuffix: u1,
+			eventing.GroupName + apis.UpdaterAnnotationSuffix: u1,
 		},
 	}, {
 		"update subscription which has no annotations with diff",
@@ -319,15 +319,15 @@ func TestSubscriptionAnnotateUserInfo(t *testing.T) {
 		&Subscription{Spec: SubscriptionSpec{DeprecatedGeneration: 1}},
 		&Subscription{},
 		map[string]string{
-			eventing.UpdaterAnnotation: u2,
+			eventing.GroupName + apis.UpdaterAnnotationSuffix: u2,
 		}}, {
 		"update subscription which has annotations with diff",
 		u3,
 		withUserAnns(u1, u2, &Subscription{Spec: SubscriptionSpec{DeprecatedGeneration: 1}}),
 		withUserAnns(u1, u2, &Subscription{}),
 		map[string]string{
-			eventing.CreatorAnnotation: u1,
-			eventing.UpdaterAnnotation: u3,
+			eventing.GroupName + apis.CreatorAnnotationSuffix: u1,
+			eventing.GroupName + apis.UpdaterAnnotationSuffix: u3,
 		},
 	}}
 

@@ -19,6 +19,7 @@ import (
 	"flag"
 	"log"
 
+	"github.com/knative/eventing/pkg/apis/eventing"
 	"github.com/knative/eventing/pkg/channeldefaulter"
 
 	"go.uber.org/zap"
@@ -88,6 +89,7 @@ func main() {
 		Port:           8443,
 		SecretName:     "eventing-webhook-certs",
 		WebhookName:    "webhook.eventing.knative.dev",
+		GroupName:      eventing.GroupName,
 	}
 	controller := webhook.AdmissionController{
 		Client:  kubeClient,

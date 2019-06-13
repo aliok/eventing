@@ -346,8 +346,8 @@ func TestChannelAnnotateUserInfo(t *testing.T) {
 			defer c.SetAnnotations(a)
 		}
 
-		a[eventing.CreatorAnnotation] = creator
-		a[eventing.UpdaterAnnotation] = updater
+		a[eventing.GroupName+apis.CreatorAnnotationSuffix] = creator
+		a[eventing.GroupName+apis.UpdaterAnnotationSuffix] = updater
 
 		return c
 	}
@@ -364,8 +364,8 @@ func TestChannelAnnotateUserInfo(t *testing.T) {
 		&Channel{},
 		nil,
 		map[string]string{
-			eventing.CreatorAnnotation: u1,
-			eventing.UpdaterAnnotation: u1,
+			eventing.GroupName + apis.CreatorAnnotationSuffix: u1,
+			eventing.GroupName + apis.UpdaterAnnotationSuffix: u1,
 		},
 	}, {
 		"update channel which has no annotations without diff",
@@ -379,8 +379,8 @@ func TestChannelAnnotateUserInfo(t *testing.T) {
 		withUserAnns(u1, u1, &Channel{}),
 		withUserAnns(u1, u1, &Channel{}),
 		map[string]string{
-			eventing.CreatorAnnotation: u1,
-			eventing.UpdaterAnnotation: u1,
+			eventing.GroupName + apis.CreatorAnnotationSuffix: u1,
+			eventing.GroupName + apis.UpdaterAnnotationSuffix: u1,
 		},
 	}, {
 		"update channel which has no annotations with diff",
@@ -388,15 +388,15 @@ func TestChannelAnnotateUserInfo(t *testing.T) {
 		&Channel{Spec: ChannelSpec{DeprecatedGeneration: 1}},
 		&Channel{},
 		map[string]string{
-			eventing.UpdaterAnnotation: u2,
+			eventing.GroupName + apis.UpdaterAnnotationSuffix: u2,
 		}}, {
 		"update channel which has annotations with diff",
 		u3,
 		withUserAnns(u1, u2, &Channel{Spec: ChannelSpec{DeprecatedGeneration: 1}}),
 		withUserAnns(u1, u2, &Channel{}),
 		map[string]string{
-			eventing.CreatorAnnotation: u1,
-			eventing.UpdaterAnnotation: u3,
+			eventing.GroupName + apis.CreatorAnnotationSuffix: u1,
+			eventing.GroupName + apis.UpdaterAnnotationSuffix: u3,
 		},
 	}}
 

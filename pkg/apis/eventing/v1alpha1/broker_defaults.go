@@ -22,7 +22,6 @@ import (
 
 func (b *Broker) SetDefaults(ctx context.Context) {
 	b.Spec.SetDefaults(ctx)
-	setUserInfoAnnotations(b, ctx)
 }
 
 func (bs *BrokerSpec) SetDefaults(ctx context.Context) {

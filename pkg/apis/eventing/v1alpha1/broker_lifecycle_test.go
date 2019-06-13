@@ -449,8 +449,8 @@ func TestBrokerAnnotateUserInfo(t *testing.T) {
 			defer b.SetAnnotations(a)
 		}
 
-		a[eventing.CreatorAnnotation] = creator
-		a[eventing.UpdaterAnnotation] = updater
+		a[eventing.GroupName+apis.CreatorAnnotationSuffix] = creator
+		a[eventing.GroupName+apis.UpdaterAnnotationSuffix] = updater
 
 		return b
 	}
@@ -467,8 +467,8 @@ func TestBrokerAnnotateUserInfo(t *testing.T) {
 		&Broker{},
 		nil,
 		map[string]string{
-			eventing.CreatorAnnotation: u1,
-			eventing.UpdaterAnnotation: u1,
+			eventing.GroupName + apis.CreatorAnnotationSuffix: u1,
+			eventing.GroupName + apis.UpdaterAnnotationSuffix: u1,
 		},
 	}, {
 		"update broker which has no annotations without diff",
@@ -482,8 +482,8 @@ func TestBrokerAnnotateUserInfo(t *testing.T) {
 		withUserAnns(u1, u1, &Broker{}),
 		withUserAnns(u1, u1, &Broker{}),
 		map[string]string{
-			eventing.CreatorAnnotation: u1,
-			eventing.UpdaterAnnotation: u1,
+			eventing.GroupName + apis.CreatorAnnotationSuffix: u1,
+			eventing.GroupName + apis.UpdaterAnnotationSuffix: u1,
 		},
 	}, {
 		"update broker which has no annotations with diff",
@@ -491,15 +491,15 @@ func TestBrokerAnnotateUserInfo(t *testing.T) {
 		&Broker{Spec: BrokerSpec{DeprecatedChannelTemplate: &ChannelSpec{DeprecatedGeneration: 1}}},
 		&Broker{},
 		map[string]string{
-			eventing.UpdaterAnnotation: u2,
+			eventing.GroupName + apis.UpdaterAnnotationSuffix: u2,
 		}}, {
 		"update broker which has annotations with diff",
 		u3,
 		withUserAnns(u1, u2, &Broker{Spec: BrokerSpec{DeprecatedChannelTemplate: &ChannelSpec{DeprecatedGeneration: 1}}}),
 		withUserAnns(u1, u2, &Broker{}),
 		map[string]string{
-			eventing.CreatorAnnotation: u1,
-			eventing.UpdaterAnnotation: u3,
+			eventing.GroupName + apis.CreatorAnnotationSuffix: u1,
+			eventing.GroupName + apis.UpdaterAnnotationSuffix: u3,
 		},
 	}}
 
