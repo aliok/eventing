@@ -435,7 +435,7 @@
   version = "v1.3.0"
 
 [[projects]]
-  digest = "1:061cecf89cc2378f313d6eb1563d957e9fb5a8f69eab4e76d447bb999c141203"
+  digest = "1:86ce169f38f263c4b5a156ab67b7467f21a69c987979733bd99ebedb3a4452c3"
   name = "github.com/knative/pkg"
   packages = [
     "apis",
@@ -494,7 +494,7 @@
     "webhook",
   ]
   pruneopts = "T"
-  revision = "968de693ae417c6879cf66ecdedcb1235dd248ae"
+  revision = "0593ffb35088db1ce857140e1e90a61f412a6fcb"
   source = "https://github.com/aliok/pkg.git"
 
 [[projects]]

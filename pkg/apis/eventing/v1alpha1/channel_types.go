@@ -121,7 +121,7 @@ func (c *Channel) GetGroupVersionKind() schema.GroupVersionKind {
 	return SchemeGroupVersion.WithKind("Channel")
 }
 
-// GetSpec returns the spec of the Channel.
-func (c *Channel) GetSpec() interface{} {
+// GetUntypedSpec returns the spec of the resource.
+func (c *Channel) GetUntypedSpec() interface{} {
 	return c.Spec
 }

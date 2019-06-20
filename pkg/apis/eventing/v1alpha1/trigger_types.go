@@ -111,7 +111,7 @@ func (t *Trigger) GetGroupVersionKind() schema.GroupVersionKind {
 	return SchemeGroupVersion.WithKind("Trigger")
 }
 
-// GetSpec returns the spec of the Trigger.
-func (t *Trigger) GetSpec() interface{} {
+// GetUntypedSpec returns the spec of the resource.
+func (t *Trigger) GetUntypedSpec() interface{} {
 	return t.Spec
 }
